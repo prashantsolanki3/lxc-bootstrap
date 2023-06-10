@@ -10,7 +10,7 @@ on:
   # pull_request:
   #   branches: [ "main" ]
   workflow_run:
-    workflows: ["recreate-vm"]
+    workflows: ["Recreate VM Bootstrap on Proxmox Home Lab"]
     types:
       - completed
   
