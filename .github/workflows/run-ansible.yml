@@ -53,7 +53,11 @@ jobs:
           echo "ipv4=$ipv4" >> $GITHUB_ENV
           echo "ipv4_data=$ipv4_data" >> $GITHUB_ENV
           echo $GITHUB_ENV
-      
+      - name: Get hosts
+        id: vars
+        run: echo ::set-output name=hosts::$(cat /root/.ssh/known_hosts)
+      - name: Test output
+        run: echo ${{ steps.vars.outputs.hosts }}
       # - name: Remove old host key
       #   run: ssh-keygen -R $ipv4
 
