@@ -55,11 +55,15 @@ jobs:
           echo $GITHUB_ENV
       - name: Get hosts
         id: vars
-        run: echo ::set-output name=hosts::$(cat /root/.ssh/known_hosts)
+        run: echo ::set-output name=hosts::$(ls -la /root/.ssh/known_hosts)
       - name: Test output
         run: echo ${{ steps.vars.outputs.hosts }}
-      # - name: Remove old host key
-      #   run: ssh-keygen -R $ipv4
+      
+      # - name: Update owner of known_hosts
+      #   run: schown runner:runner /root/.ssh/known_hosts
+
+      - name: Remove old host key
+        run: sudo ssh-keygen -R $ipv4
 
       - name: ansible-playbook
         run: ansible-playbook -i $env_path/$repo/bootstrap_hosts -e "@$env_path/$repo/bootstrap_host_vars.yml" bootstrap.yml
