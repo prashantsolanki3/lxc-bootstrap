@@ -23,8 +23,10 @@ jobs:
   build:
     # The type of runner that the job will run on
     # runs-on: ubuntu-latest
-    runs-on: self-hosted
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    strategy: &strategy
+      matrix:
+        os: [lxc-bootstrap]
+    runs-on: ${{ matrix.os }}    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
@@ -46,9 +48,6 @@ jobs:
         
       - name: HashiCorp - Setup Terraform
         uses: hashicorp/setup-terraform@v2.0.3
-        
-      - name: Install ansible
-        run: python3 -m pip install ansible
       
       - name: terraform init
         run: terraform init
@@ -63,3 +62,19 @@ jobs:
 
       - name: terraform-apply
         run: terraform apply -var-file=$env_path/$repo/terraform.tfvars -state=$env_path/$repo/state/terraform.tfstate --auto-approve
+
+  config:
+    strategy: *strategy
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: prashantsolanki3/dots
+      - name: jgv
+        run: ls && ls dots
+      - name: Install ansible
+        run: python3 -m pip install ansible
+      - name: Install ansible-galaxy
+        run: ansible-galaxy install -r requirements.yml
+      # TODO: Run ansible-playbook for bootstrap from actions
+
