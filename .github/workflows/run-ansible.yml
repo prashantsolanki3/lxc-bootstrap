@@ -50,6 +50,9 @@ jobs:
           echo "ipv4=$ipv4" >> $GITHUB_ENV
           echo "ipv4_data=$ipv4_data" >> $GITHUB_ENV
           echo $GITHUB_ENV
+      
+      - name: Remove old host key
+        run: ssh-keygen -R $ipv4
 
       - name: ansible-playbook
         run: ansible-playbook -i $env_path/$repo/bootstrap_hosts -e "@$env_path/$repo/bootstrap_host_vars.yml" bootstrap.yml
