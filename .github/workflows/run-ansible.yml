@@ -50,20 +50,11 @@ jobs:
         run: |
           ipv4=$(jq -r '.resources[].instances[].attributes.network[] | select(.name == "eth0").ip' $env_path/$repo/state/terraform.tfstate)
           ipv4_data=$(jq -r '.resources[].instances[].attributes.network[] | select(.name == "eth0").ip' $env_path/$repo/state/terraform.tfstate)
-          echo "ipv4=$ipv4" >> $GITHUB_ENV
-          echo "ipv4_data=$ipv4_data" >> $GITHUB_ENV
-          echo $GITHUB_ENV
-      - name: Get hosts
-        id: vars
-        run: echo ::set-output name=hosts::$(ls -la /root/.ssh/known_hosts)
-      - name: Test output
-        run: echo ${{ steps.vars.outputs.hosts }}
-      
-      # - name: Update owner of known_hosts
-      #   run: schown runner:runner /root/.ssh/known_hosts
 
-      - name: Remove old host key
-        run: sudo ssh-keygen -R $ipv4
+          IFS='/' read -ra ipv4_list <<< "$ipv4"
+          IFS='/' read -ra ipv4_data_list <<< "$ipv4_data"
+          echo "ipv4=${ipv4_list[1]}" >> $GITHUB_ENV
+          echo "ipv4_data=${ipv4_data_list[1]}" >> $GITHUB_ENV
 
       - name: ansible-playbook
         run: ansible-playbook -i $env_path/$repo/bootstrap_hosts -e "@$env_path/$repo/bootstrap_host_vars.yml" bootstrap.yml
