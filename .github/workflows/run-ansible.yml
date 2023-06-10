@@ -25,7 +25,7 @@ env:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  configure:
     strategy: 
       matrix:
         os: [lxc-bootstrap]
@@ -42,6 +42,14 @@ jobs:
 
       - name: Install ansible-galaxy
         run: ansible-galaxy install -r requirements.yml
-      
+
+      - name: Extract ip from tfstate and save to runner env
+        run: |
+          ipv4=$(jq -r '.resources[].instances[].attributes.network[] | select(.name == "eth0").ip' $env_path/$repo/state/terraform.tfstate)
+          ipv4_data=$(jq -r '.resources[].instances[].attributes.network[] | select(.name == "eth0").ip' $env_path/$repo/state/terraform.tfstate)
+          echo "ipv4=$ipv4" >> $GITHUB_ENV
+          echo "ipv4_data=$ipv4_data" >> $GITHUB_ENV
+          echo $GITHUB_ENV
+
       - name: ansible-playbook
         run: ansible-playbook -i $env_path/$repo/bootstrap_hosts -e "@$env_path/$repo/bootstrap_host_vars.yml" bootstrap.yml
