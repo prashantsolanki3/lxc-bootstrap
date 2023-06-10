@@ -62,21 +62,3 @@ jobs:
 
       - name: terraform-apply
         run: terraform apply -var-file=$env_path/$repo/terraform.tfvars -state=$env_path/$repo/state/terraform.tfstate --auto-approve
-
-  config:
-    strategy: 
-      matrix:
-        os: [lxc-bootstrap]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          repository: prashantsolanki3/dots
-      - name: jgv
-        run: ls && ls dots
-      - name: Install ansible
-        run: python3 -m pip install ansible
-      - name: Install ansible-galaxy
-        run: ansible-galaxy install -r requirements.yml
-      # TODO: Run ansible-playbook for bootstrap from actions
-
