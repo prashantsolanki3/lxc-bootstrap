@@ -53,7 +53,12 @@ jobs:
       - name: terraform init
         run: terraform init
 
+      - name: Check if state file exists
+        run: test -f $env_path$repo/state/terraform.tfstate
+        id: check_state_file
+
       - name: terraform-destroy
+        if: steps.check_state_file.outputs.return-code == 0
         run: terraform destroy -var-file=$env_path/$repo/terraform.tfvars -state=$env_path$repo/state/terraform.tfstate --auto-approve
 
       - name: terraform-apply
