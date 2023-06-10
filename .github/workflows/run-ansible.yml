@@ -9,27 +9,39 @@ on:
   #   branches: [ "main" ]
   # pull_request:
   #   branches: [ "main" ]
-
+  workflow_run:
+    workflows: ["recreate-vm"]
+    types:
+      - completed
+  
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+  
+
+env:
+  repo: ${{ github.event.repository.name }}
+  env_path: /mnt/env
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
-    # runs-on: ubuntu-latest
-    runs-on: self-hosted
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    strategy: 
+      matrix:
+        os: [lxc-bootstrap]
+    runs-on: ${{ matrix.os }}
+
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      
-      - name: Git pull dots repo
-        run: cd /mnt/env/vm-bootstrap/bootstrap_ansible && git pull
+        with:
+          repository: prashantsolanki3/dots
 
       - name: Install ansible
         run: python3 -m pip install ansible
+
+      - name: Install ansible-galaxy
+        run: ansible-galaxy install -r requirements.yml
       
       - name: ansible-playbook
-        run: ansible-playbook -i /mnt/env/vm-bootstrap/bootstrap_hosts -e "@/mnt/env/vm-bootstrap/bootstrap_host_vars.yml" /mnt/env/vm-bootstrap/bootstrap_ansible/bootstrap.yml
+        run: ansible-playbook -i $env_path/$repo/bootstrap_hosts -e "@$env_path/$repo/bootstrap_host_vars.yml" bootstrap.yml
