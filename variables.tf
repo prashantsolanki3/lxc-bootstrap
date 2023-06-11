@@ -57,13 +57,13 @@ variable "ostype" {
 variable "cpu_count" {
   description = "cpu_count"
   type        = number
-  default     = 2
+  default     = 4
 }
 
 variable "memory" {
   description = "Memory"
   type        = number
-  default     = 4096
+  default     = 8192
 }
 
 variable "hostname" {
