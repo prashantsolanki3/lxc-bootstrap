@@ -26,7 +26,7 @@ jobs:
   configure:
     strategy: 
       matrix:
-        os: [lxc-bootstrap]
+        os: [datahoarder_runner]
     runs-on: ${{ matrix.os }}
 
     steps:
