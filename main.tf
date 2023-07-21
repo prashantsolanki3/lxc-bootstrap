@@ -33,7 +33,7 @@ resource "proxmox_lxc" "container" {
   cores       = var.cpu_count
   description = var.description
   memory      = var.memory
-  start       = true
+  start       = var.start
 
 
   ssh_public_keys = <<EOF

@@ -98,3 +98,9 @@ variable "disk_storage" {
   type        = string
   default     = "local-lvm"
 }
+
+variable "start" {
+  description = "Start the container after creating"
+  type        = bool
+  default     = false  
+}
